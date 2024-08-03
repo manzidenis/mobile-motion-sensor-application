@@ -1,5 +1,6 @@
 ## Mobile motion sensor application for both Android $ IOS
   ----------------------------------------------------------
+Developed using Flutter.
 
 ### Application Features
 -----------------------
