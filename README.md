@@ -1,9 +1,13 @@
-### mobile motion sensor application for both Android $ IOS
+## Mobile motion sensor application for both Android $ IOS
+  ----------------------------------------------------------
 
-#### Application Features
+### Application Features
+-----------------------
 * Light Level Sensor
 * Motion or Vibration Detection with visual charts
 * Step Counter
 * Location Tracking and Geofencing.
 
-##### screenshots to be uploaded soon.
+### Screenshots
+----------------
+NB:  to be uploaded very soon.
