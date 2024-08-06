@@ -1,16 +1,14 @@
-# smart_home_monitoring
+## Mobile motion sensor application for both Android $ IOS
+  ----------------------------------------------------------
+Developed using Flutter.
 
-A new Flutter project.
+### Application Features
+-----------------------
+* Light Level Sensor
+* Motion or Vibration Detection with visual charts
+* Step Counter
+* Location Tracking and Geofencing.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Screenshots
+----------------
+NB:  to be uploaded very soon.
