@@ -18,6 +18,8 @@ class _MotionDetectionScreenState extends State<MotionDetectionScreen> {
   List<SensorData> _accelerometerData = [];
   final int _dataLimit = 50;
   DateTime? _lastNotificationTime;
+  int _motionCount = 0;
+  int _vibrationCount = 0;
 
   @override
   void initState() {
@@ -44,12 +46,15 @@ class _MotionDetectionScreenState extends State<MotionDetectionScreen> {
       final detectionResult = _detectMotionType(data);
       final now = DateTime.now();
 
-      if (detectionResult == 'motion' && ( _lastNotificationTime == null || now.difference(_lastNotificationTime!).inSeconds > 30)) {
+      if (detectionResult == 'motion' && (_lastNotificationTime == null || now.difference(_lastNotificationTime!).inSeconds > 30)) {
         _notificationUtils.showNotification(
           'Motion Detected',
           'Significant motion detected in your home.',
         );
         _lastNotificationTime = now;
+        _motionCount++;
+      } else if (detectionResult == 'vibration') {
+        _vibrationCount++;
       }
     });
   }
@@ -61,6 +66,9 @@ class _MotionDetectionScreenState extends State<MotionDetectionScreen> {
     if (magnitude > 1.5) {
       // Detected body movement
       return 'motion';
+    } else if (magnitude > 0.5 && magnitude <= 1.5) {
+      // Detected vibration
+      return 'vibration';
     }
     return null;
   }
@@ -69,7 +77,7 @@ class _MotionDetectionScreenState extends State<MotionDetectionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Motion Detection'),
+        title: Text('Motion & Vibration Detection'),
       ),
       body: Center(
         child: Padding(
@@ -77,13 +85,9 @@ class _MotionDetectionScreenState extends State<MotionDetectionScreen> {
           child: Column(
             children: [
               Expanded(
-                child: SensorChart(data: _accelerometerData),
+                child: SensorChart(motionCount: _motionCount, vibrationCount: _vibrationCount),
               ),
               SizedBox(height: 20),
-              Text(
-                'Motion detected',
-                style: TextStyle(fontSize: 24, color: Colors.red),
-              ),
             ],
           ),
         ),

@@ -3,10 +3,10 @@ import 'dart:async';
 import '../models/sensor_data.dart';
 
 class MotionDetectionService {
-  late StreamSubscription<AccelerometerEvent> _accSubscription;
+  late StreamSubscription<UserAccelerometerEvent> _accSubscription;
 
   void startListening(Function(SensorData) onData) {
-    _accSubscription = accelerometerEvents.listen((AccelerometerEvent event) {
+    _accSubscription = userAccelerometerEvents.listen((UserAccelerometerEvent event) {
       onData(SensorData(
         timestamp: DateTime.now(),
         x: event.x,

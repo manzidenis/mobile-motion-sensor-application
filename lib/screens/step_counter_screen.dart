@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pedometer/pedometer.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:async';
+import 'dart:math';
 
 class StepCounterScreen extends StatefulWidget {
   @override
@@ -9,8 +10,9 @@ class StepCounterScreen extends StatefulWidget {
 
 class _StepCounterScreenState extends State<StepCounterScreen> {
   int _stepCount = 0;
-  int _initialStepCount = 0; // Store the step count at start
-  StreamSubscription<StepCount>? _subscription;
+  StreamSubscription<UserAccelerometerEvent>? _subscription;
+  double _previousMagnitude = 0.0;
+  bool _isAboveThreshold = false;
 
   @override
   void initState() {
@@ -25,15 +27,10 @@ class _StepCounterScreenState extends State<StepCounterScreen> {
   }
 
   void _startListening() {
-    _subscription = Pedometer.stepCountStream.listen(
-          (StepCount event) {
+    _subscription = userAccelerometerEvents.listen(
+          (UserAccelerometerEvent event) {
         setState(() {
-          if (_initialStepCount == 0) {
-            // Set initial step count if it's not set
-            _initialStepCount = event.steps;
-          }
-          // Calculate displayed step count based on the initial step count
-          _stepCount = event.steps - _initialStepCount;
+          _detectStep(event);
         });
       },
       onError: (error) {
@@ -42,14 +39,27 @@ class _StepCounterScreenState extends State<StepCounterScreen> {
     );
   }
 
+  void _detectStep(UserAccelerometerEvent event) {
+    // Calculate the magnitude of the acceleration vector
+    double magnitude = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
+
+    // Threshold for step detection - this value may need to be adjusted based on real-world testing
+    double threshold = 1.2;
+
+    if (magnitude > threshold && !_isAboveThreshold) {
+      // Detected a step
+      _isAboveThreshold = true;
+      _stepCount++;
+    } else if (magnitude < threshold && _isAboveThreshold) {
+      // Reset the flag when the magnitude drops below the threshold
+      _isAboveThreshold = false;
+    }
+  }
+
   void _resetStepCount() {
-    print("Resetting step count");
-    _subscription?.cancel();
     setState(() {
-      _initialStepCount = 0; // Reset the initial step count
       _stepCount = 0; // Reset the displayed step count
     });
-    _startListening();
   }
 
   @override
