@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
-import 'dart:async'; // Import the dart:async library for StreamSubscription
+import 'dart:async';
 
 class StepCounterScreen extends StatefulWidget {
   @override
@@ -9,7 +9,8 @@ class StepCounterScreen extends StatefulWidget {
 
 class _StepCounterScreenState extends State<StepCounterScreen> {
   int _stepCount = 0;
-  StreamSubscription<StepCount>? _subscription; // Correct the type of StreamSubscription
+  int _initialStepCount = 0; // Store the step count at start
+  StreamSubscription<StepCount>? _subscription;
 
   @override
   void initState() {
@@ -20,10 +21,6 @@ class _StepCounterScreenState extends State<StepCounterScreen> {
   @override
   void dispose() {
     _subscription?.cancel();
-    // Reset step count when the screen is closed or navigated away
-    setState(() {
-      _stepCount = 0;
-    });
     super.dispose();
   }
 
@@ -31,7 +28,12 @@ class _StepCounterScreenState extends State<StepCounterScreen> {
     _subscription = Pedometer.stepCountStream.listen(
           (StepCount event) {
         setState(() {
-          _stepCount = event.steps; // Access the steps property from StepCount
+          if (_initialStepCount == 0) {
+            // Set initial step count if it's not set
+            _initialStepCount = event.steps;
+          }
+          // Calculate displayed step count based on the initial step count
+          _stepCount = event.steps - _initialStepCount;
         });
       },
       onError: (error) {
@@ -40,11 +42,27 @@ class _StepCounterScreenState extends State<StepCounterScreen> {
     );
   }
 
+  void _resetStepCount() {
+    print("Resetting step count");
+    _subscription?.cancel();
+    setState(() {
+      _initialStepCount = 0; // Reset the initial step count
+      _stepCount = 0; // Reset the displayed step count
+    });
+    _startListening();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Step Counter'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: _resetStepCount,
+          ),
+        ],
       ),
       body: Center(
         child: Padding(
