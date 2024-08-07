@@ -44,7 +44,7 @@ class _StepCounterScreenState extends State<StepCounterScreen> {
     double magnitude = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
 
     // Threshold for step detection - this value may need to be adjusted based on real-world testing
-    double threshold = 1.2;
+    double threshold = 6;
 
     if (magnitude > threshold && !_isAboveThreshold) {
       // Detected a step
