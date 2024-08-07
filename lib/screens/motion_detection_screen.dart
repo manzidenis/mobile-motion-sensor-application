@@ -17,9 +17,8 @@ class _MotionDetectionScreenState extends State<MotionDetectionScreen> {
   late NotificationUtils _notificationUtils;
   List<SensorData> _accelerometerData = [];
   final int _dataLimit = 50;
-  DateTime? _lastNotificationTime;
-  int _motionCount = 0;
-  int _vibrationCount = 0;
+  List<int> _motionData = [];
+  List<int> _vibrationData = [];
 
   @override
   void initState() {
@@ -44,18 +43,25 @@ class _MotionDetectionScreenState extends State<MotionDetectionScreen> {
       _accelerometerData.add(data);
 
       final detectionResult = _detectMotionType(data);
-      final now = DateTime.now();
 
-      if (detectionResult == 'motion' && (_lastNotificationTime == null || now.difference(_lastNotificationTime!).inSeconds > 30)) {
+      if (detectionResult == 'motion') {
         _notificationUtils.showNotification(
           'Motion Detected',
           'Significant motion detected in your home.',
         );
-        _lastNotificationTime = now;
-        _motionCount++;
+        _motionData.add(1); // Adding a point for motion detection
+        _vibrationData.add(0); // Adding a point for no vibration
       } else if (detectionResult == 'vibration') {
-        _vibrationCount++;
+        _vibrationData.add(1); // Adding a point for vibration detection
+        _motionData.add(0); // Adding a point for no motion
+      } else {
+        _motionData.add(0); // Adding a point for no motion
+        _vibrationData.add(0); // Adding a point for no vibration
       }
+
+      // Limit the number of data points stored
+      if (_motionData.length > _dataLimit) _motionData.removeAt(0);
+      if (_vibrationData.length > _dataLimit) _vibrationData.removeAt(0);
     });
   }
 
@@ -85,7 +91,10 @@ class _MotionDetectionScreenState extends State<MotionDetectionScreen> {
           child: Column(
             children: [
               Expanded(
-                child: SensorChart(motionCount: _motionCount, vibrationCount: _vibrationCount),
+                child: SensorChart(
+                  motionData: _motionData,
+                  vibrationData: _vibrationData,
+                ),
               ),
               SizedBox(height: 20),
             ],
